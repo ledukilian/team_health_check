@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Météo équipe · Team Health Check</title>
+  <title>Météo équipe - 0.2.1</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌦️</text></svg>">
   <style>
     :root {
@@ -15,7 +15,7 @@
       --blue: #2f6fed;
       --blue-dark: #1e4eb3;
       --shadow: 0 18px 50px rgba(20, 34, 56, .10);
-      --radius: 20px;
+      --radius: 10px;
     }
     * { box-sizing: border-box; }
     html {
@@ -33,15 +33,20 @@
     .app { max-width: 1420px; margin: 0 auto; padding: 32px 24px 60px; }
     .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 18px; }
     h1 { margin: 0; font-size: clamp(2rem, 4vw, 3.35rem); line-height: 1; letter-spacing: -.055em; font-weight: 600; }
+    h1 .title-emoji { display: inline-block; transform: scaleX(-1); }
     h1 .version { font-size: .85rem; font-weight: 600; letter-spacing: 0; color: var(--muted); vertical-align: baseline; }
     .hero p { max-width: 610px; color: var(--muted); margin: 13px 0 0; line-height: 1.55; }
     .tabs { display: flex; gap: 8px; margin-bottom: 18px; border-bottom: 1px solid var(--line); }
-    .tab { display: inline-flex; align-items: center; gap: 8px; margin-bottom: -1px; padding: 16px 22px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--muted); font: inherit; font-size: 1.35rem; font-weight: 600; cursor: pointer; }
+    .tab { display: inline-flex; align-items: center; gap: 8px; margin-bottom: -1px; padding: 16px 22px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--muted); font: inherit; font-size: 1.12rem; font-weight: 600; cursor: pointer; }
     .tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--blue); border-bottom-width: 6px; }
     .tab:hover:not(:disabled) { color: var(--ink); }
     .tab:disabled { opacity: .4; cursor: not-allowed; }
     .tab-lock { width: 18px; height: 18px; flex-shrink: 0; display: none; }
     .tab.is-locked .tab-lock { display: block; }
+    .tab > svg:not(.tab-lock) { width: 22px; height: 22px; flex-shrink: 0; display: block; }
+    .tab-icon { padding: 16px 14px; }
+    .tab-icon svg { width: 24px; height: 24px; }
+    .tab-end { margin-left: auto; }
     .grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 22px; }
     .card { background: rgba(255,255,255,.93); border: 1px solid rgba(221,229,239,.95); border-radius: var(--radius); box-shadow: var(--shadow); }
     .card-pad { padding: 24px; }
@@ -63,17 +68,15 @@
     .progress { height: 10px; overflow: hidden; background: rgba(255,255,255,.32); border-radius: 999px; margin-top: 20px; }
     .progress > i { display:block; width:0; height:100%; background:white; border-radius: inherit; transition: width .35s ease; }
     .metric-list { display: grid; gap: 13px; }
-    .metric { border: 1px solid var(--line); border-radius: 15px; padding: 15px; }
+    .metric { border: 1px solid var(--line); border-radius: 8px; padding: 15px; }
     .metric-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
     .metric-name { font-weight: 600; } .metric-score { font-size: 1.15rem; font-weight: 600; color: var(--blue); }
     .metric-desc { color: var(--muted); font-size: .79rem; margin-top: 3px; }
     .bar { margin-top: 12px; height: 8px; background: #e9eef6; border-radius: 999px; overflow:hidden; }
     .bar i { display: block; height: 100%; border-radius: inherit; background: #8B1A1A; transition: width .35s ease, background-color .35s ease; }
     .wide { grid-column: 1 / -1; }
-    .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 15px; }
-    .actions { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
     button { font: inherit; }
-    .btn { cursor:pointer; border: 1px solid var(--line); border-radius: 11px; padding: 10px 13px; color:var(--ink); font-size:.86rem; font-weight:600; background:white; transition: .18s ease; }
+    .btn { cursor:pointer; border: 1px solid var(--line); border-radius: 6px; padding: 10px 13px; color:var(--ink); font-size:.86rem; font-weight:600; background:white; transition: .18s ease; }
     .btn:hover { transform: translateY(-1px); border-color:#b8c6d9; box-shadow: 0 6px 14px rgba(20,34,56,.08); }
     .btn.primary { color:white; border-color:var(--blue); background:var(--blue); } .btn.primary:hover { background:var(--blue-dark); }
     .btn.danger { color:#b42338; }
@@ -84,7 +87,7 @@
     .text-link.danger:hover { color:#8d2135; }
     .text-link[aria-disabled="true"] { opacity:.4; pointer-events:none; cursor:default; }
     input[type=file] { display:none; }
-    .table-wrap { overflow:auto; border:1px solid var(--line); border-radius:14px; }
+    .table-wrap { overflow:auto; border:1px solid var(--line); border-radius:7px; }
     table { width:100%; border-collapse: collapse; }
     .table-wrap table { min-width: 690px; }
     .table-wrap tbody tr:hover td { background: rgba(20, 34, 56, .10); }
@@ -107,6 +110,11 @@
     .btn.success:hover { background:#156332; }
     .text-link.success { color:#1B7A3C; }
     .text-link.success:hover { color:#156332; }
+    .text-link.blue { color: var(--blue); }
+    .text-link.blue:hover { color: var(--blue-dark); }
+    .json-download { margin-top: 10px; }
+    .settings-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .settings-actions .btn:hover { transform: none; box-shadow: none; background: #f4f7fb; }
     .add-response { display:flex; align-items:center; justify-content:center; width:fit-content; margin:14px auto 0; font-size:.98rem; }
     .row-actions { white-space: nowrap; }
     .row-actions .text-link + .text-link { margin-left: 14px; }
@@ -115,17 +123,17 @@
     .compact-field { display:flex; flex-direction:column; gap:5px; min-width:0; }
     .compact-label { font-size:.7rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
     .compact-hint { color:var(--muted); font-size:.73rem; line-height:1.25; margin-top:-2px; }
-    .input-name { width:180px; border:1px solid var(--line); border-radius:10px; padding:8px 10px; font:inherit; color:var(--ink); outline:0; }
+    .input-name { width:180px; border:1px solid var(--line); border-radius:5px; padding:8px 10px; font:inherit; color:var(--ink); outline:0; }
     .input-name:focus { border-color:var(--blue); box-shadow:0 0 0 3px rgba(47,111,237,.12); }
     .scale { display:flex; gap:4px; }
     .choice { position:relative; cursor:pointer; }
     .choice input { position:absolute; opacity:0; pointer-events:none; }
-    .choice span { width:36px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:9px; border:1.5px solid var(--tone); background:transparent; color:var(--tone); font-size:.95rem; font-weight:600; transition:.15s ease; }
+    .choice span { width:36px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:5px; border:1.5px solid var(--tone); background:transparent; color:var(--tone); font-size:.95rem; font-weight:600; transition:.15s ease; }
     .choice:hover span { transform:translateY(-1px); }
     .choice input:checked + span { background:var(--tone); color:var(--on-tone, #fff); }
     .scale-caption { margin:6px 0 0; min-height:1.3em; font-size:.75rem; font-weight:600; line-height:1.3; color:#000; }
     .memo-grid { display:grid; grid-template-columns: 1.35fr .85fr .9fr; gap:22px; }
-    .memo-grid h3 { margin:0 0 10px; font-size:.73rem; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); font-weight:600; }
+    .memo-grid h3 { margin:0 0 10px; font-size:1.15rem; letter-spacing:-.02em; color:var(--ink); font-weight:600; }
     .memo-grid p, .memo-grid li { color:var(--muted); font-size:.84rem; line-height:1.45; }
     .memo-grid p { margin:0 0 10px; }
     .memo-grid ul { margin:0 0 10px; padding-left:17px; }
@@ -133,14 +141,14 @@
     .memo-table td, .memo-table th { padding:7px 8px; font-size:.8rem; border-top:1px solid var(--line); }
     .memo-table th { background:#f8fafc; font-size:.68rem; }
     .memo-table tr:first-child td, .memo-table thead th { border-top:0; }
-    .memo-note { display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:7px; background:var(--tone); color:var(--on-tone, #fff); font-weight:600; font-size:.8rem; }
+    .memo-note { display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:4px; background:var(--tone); color:var(--on-tone, #fff); font-weight:600; font-size:.8rem; }
     .memo-strong { color:var(--ink); font-weight:600; }
     .period-bar { display:flex; align-items:center; gap:10px; margin-bottom:22px; }
     .period-hint { color:var(--muted); font-size:.86rem; }
-    .period-select { min-width:200px; max-width:360px; height:38px; border:1px solid var(--line); border-radius:11px; padding:0 10px; font:inherit; color:var(--ink); background:white; outline:0; }
-    .period-bar .period-select { min-width:280px; max-width:480px; height:48px; font-size:1.3rem; padding:0 14px; border-radius:12px; }
+    .period-select { min-width:200px; max-width:360px; height:38px; border:1px solid var(--line); border-radius:6px; padding:0 10px; font:inherit; color:var(--ink); background:white; outline:0; }
+    .period-bar .period-select { min-width:280px; max-width:480px; height:48px; font-size:1.3rem; padding:0 14px; border-radius:6px; }
     .period-select:focus { border-color:var(--blue); box-shadow:0 0 0 3px rgba(47,111,237,.12); }
-    .icon-btn { display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; width:38px; height:38px; padding:0; border:0; background:transparent; box-shadow:none; cursor:pointer; border-radius:8px; line-height:0; }
+    .icon-btn { display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; width:38px; height:38px; padding:0; border:0; background:transparent; box-shadow:none; cursor:pointer; border-radius:4px; line-height:0; }
     .period-bar .icon-btn { width:48px; height:48px; }
     .period-bar .icon-btn svg { width:22px; height:22px; }
     .icon-btn:hover, .icon-btn:focus { transform:none; border:0; background:transparent; box-shadow:none; }
@@ -149,7 +157,7 @@
     .icon-add { color:#1B7A3C; }
     .icon-trash { color:#b42338; }
     .modal { position:fixed; inset:0; z-index:1000; display:flex; align-items:center; justify-content:center; }
-    .modal[hidden], .tab-panel[hidden], .icon-btn[hidden], .period-bar[hidden] { display:none !important; }
+    .modal[hidden], .tab-panel[hidden], .icon-btn[hidden], .period-bar[hidden], .grid[hidden] { display:none !important; }
     .modal-backdrop { position:absolute; inset:0; background:rgba(20,34,56,.45); }
     .modal-dialog { position:relative; z-index:1; width:min(420px, calc(100% - 32px)); background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:24px; }
     .modal-dialog h2 { margin-bottom:16px; }
@@ -177,30 +185,63 @@
     .history > *:nth-last-child(2) { opacity: .8; }
     .history > *:last-child { opacity: 1; }
     .history-miss { color: #d4dbe3; font-weight: 600; min-width: 26px; text-align: center; }
+    .json-card { display: flex; flex-direction: column; min-height: calc(100dvh - 280px); }
+    .json-card .section-title { align-items: center; }
+    .json-editor {
+      flex: 1;
+      width: 100%;
+      min-height: 420px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      padding: 14px 16px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: .85rem;
+      line-height: 1.5;
+      color: var(--ink);
+      background: #f8fafc;
+      outline: 0;
+      tab-size: 2;
+      white-space: pre;
+      overflow: auto;
+    }
+    .json-editor:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(47,111,237,.12); background: #fff; }
+    .json-editor.is-invalid { border-color: #e7b4bd; }
+    .json-editor-status { margin: 0; font-size: .82rem; font-weight: 600; color: var(--muted); }
+    .json-editor-status.is-ok { color: #1B7A3C; }
+    .json-editor-status.is-error { color: #b42338; }
     @media (max-width: 860px) { .grid { grid-template-columns:1fr; } .hero { align-items:start; flex-direction:column; } .input-name { width:100%; } .memo-grid { grid-template-columns:1fr; } .period-bar { width:100%; } .period-select { flex:1; min-width:0; max-width:none; } .chart-wrap { height: 280px; } }
-    @media print { html, body { background:white; } .app { max-width:none; padding:0; } .tabs, .toolbar, .memo-grid, .period-bar, .modal, .add-response, #panel-fonctionnement, #panel-suivi { display:none !important; } #panel-saisies { display:block !important; } .card { box-shadow:none; } }
+    @media print { html, body { background:white; } .app { max-width:none; padding:0; } .tabs, .memo-grid, .period-bar, .modal, .add-response, #panel-fonctionnement, #panel-suivi, #panel-code, #panel-parametres { display:none !important; } #panel-saisies { display:block !important; } .card { box-shadow:none; } }
   </style>
 </head>
 <body>
   <main class="app">
     <header class="hero">
       <div>
-        <h1>Météo d'équipe <span class="version">0.2.0</span> 🌦️</h1>
+        <h1><span class="title-emoji" aria-hidden="true">🌦️</span> Météo d'équipe <span class="version">0.2.1</span></h1>
         <p>Deux indicateurs simples, un suivi humain.</p>
       </div>
     </header>
 
     <nav class="tabs" role="tablist" aria-label="Navigation">
       <button type="button" class="tab" role="tab" id="tab-fonctionnement" data-tab="fonctionnement" aria-controls="panel-fonctionnement" aria-selected="false">
-        Comment ça fonctionne ?
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        Comment ça fonctionne
       </button>
       <button type="button" class="tab" role="tab" id="tab-saisies" data-tab="saisies" aria-controls="panel-saisies" aria-selected="false">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
         Saisir des notes
-        <svg class="tab-lock" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
       </button>
       <button type="button" class="tab" role="tab" id="tab-suivi" data-tab="suivi" aria-controls="panel-suivi" aria-selected="false">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg>
         Suivi
         <svg class="tab-lock" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+      </button>
+      <button type="button" class="tab tab-icon tab-end" role="tab" id="tab-code" data-tab="code" data-title="Code" aria-controls="panel-code" aria-selected="false" aria-label="Code" title="Code">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      </button>
+      <button type="button" class="tab tab-icon" role="tab" id="tab-parametres" data-tab="parametres" data-title="Paramètres" aria-controls="panel-parametres" aria-selected="false" aria-label="Paramètres" title="Paramètres">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
       </button>
     </nav>
 
@@ -216,7 +257,7 @@
     </div>
 
     <section class="tab-panel" id="panel-saisies" data-panel="saisies" role="tabpanel" aria-labelledby="tab-saisies" hidden>
-      <div class="grid">
+      <div class="grid" id="saisiesGrid">
         <article class="card score-card" id="scoreCard">
           <div class="card-pad">
             <div class="score-label">Météo d'équipe</div>
@@ -238,19 +279,8 @@
         </article>
 
         <article class="card card-pad wide">
-          <div class="toolbar">
+          <div class="section-title">
             <div><h2>Réponses individuelles</h2><p class="sub">Données visibles uniquement pour le suivi et les échanges individuels.</p></div>
-            <div class="actions">
-              <label class="text-link" for="jsonImport">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4"/><path d="M8 8l4-4 4 4"/></svg>
-                Importer un JSON
-              </label>
-              <input id="jsonImport" type="file" accept=".json,application/json">
-              <a href="#" id="exportJson" class="text-link">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v10"/><path d="M8 9l4 4 4-4"/><rect x="4" y="16" width="16" height="5" rx="1.5"/></svg>
-                Exporter en JSON
-              </a>
-            </div>
           </div>
           <div class="table-wrap"><table><thead><tr><th class="col-fit">Signal</th><th class="col-fit">Personne</th><th class="cell-center col-fit col-total">Total</th><th class="cell-center col-fit">🌡️ Travail & Charge</th><th class="cell-center col-fit">🔋 Moral & énergie</th><th class="col-actions">Action</th></tr></thead><tbody id="dataRows"></tbody></table></div>
           <a href="#" id="addResponse" class="text-link success add-response">Ajouter une réponse</a>
@@ -371,6 +401,32 @@
               </ul>
             </article>
           </div>
+    </section>
+
+    <section class="tab-panel" id="panel-code" data-panel="code" role="tabpanel" aria-labelledby="tab-code" hidden>
+      <article class="card card-pad json-card">
+        <div class="section-title">
+          <div>
+            <h2>Données brutes au format JSON</h2>
+            <p class="sub">Toute modification valide est appliquée immédiatement aux données.</p>
+            <a href="#" id="downloadJson" class="text-link blue json-download">Télécharger les données</a>
+          </div>
+          <p id="jsonEditorStatus" class="json-editor-status" role="status"></p>
+        </div>
+        <textarea id="jsonEditor" class="json-editor" spellcheck="false" autocomplete="off" wrap="off" aria-label="JSON actif" aria-describedby="jsonEditorStatus"></textarea>
+      </article>
+    </section>
+
+    <section class="tab-panel" id="panel-parametres" data-panel="parametres" role="tabpanel" aria-labelledby="tab-parametres" hidden>
+      <article class="card card-pad">
+        <h2>Paramètres</h2>
+        <p class="sub">Réglages & options sympas.</p>
+        <div class="settings-actions">
+          <button type="button" class="btn" id="importJson">Importer les données</button>
+          <input id="jsonImport" type="file" accept=".json,application/json">
+          <button type="button" class="btn" id="exportJson">Exporter les données</button>
+        </div>
+      </article>
     </section>
   </main>
 
@@ -569,6 +625,8 @@
     }
     let store = loadStore();
     let currentTab = 'fonctionnement';
+    const OPEN_TABS = new Set(['fonctionnement', 'saisies', 'code', 'parametres']);
+    let jsonEditorApplying = false;
     function currentPeriod() {
       return store.config.periods.find(p => p.id === store.selectedPeriodId) || null;
     }
@@ -578,6 +636,34 @@
     }
     function exportDocument() {
       return { config: store.config, responses: store.responses };
+    }
+    function setJsonEditorStatus(kind, message) {
+      const el = document.getElementById('jsonEditorStatus');
+      el.className = 'json-editor-status' + (kind ? ` is-${kind}` : '');
+      el.textContent = message || '';
+    }
+    function fillJsonEditor() {
+      const el = document.getElementById('jsonEditor');
+      el.value = JSON.stringify(store, null, 2);
+      el.classList.remove('is-invalid');
+      el.removeAttribute('aria-invalid');
+      setJsonEditorStatus('', '');
+    }
+    function applyJsonEditorLive() {
+      const el = document.getElementById('jsonEditor');
+      try {
+        store = parseStoreDocument(el.value);
+        jsonEditorApplying = true;
+        render();
+        jsonEditorApplying = false;
+        el.classList.remove('is-invalid');
+        el.removeAttribute('aria-invalid');
+        setJsonEditorStatus('ok', 'Enregistré');
+      } catch (e) {
+        el.classList.add('is-invalid');
+        el.setAttribute('aria-invalid', 'true');
+        setJsonEditorStatus('error', e.message);
+      }
     }
 
     const PEOPLE_COLORS = ['#2f6fed', '#e85d04', '#2a9d8f', '#9b5de5', '#d62828', '#0077b6', '#f4a261', '#6a994e', '#c1121f', '#023e8a', '#bb3e03', '#8338ec'];
@@ -856,22 +942,24 @@
     }
     function setCurrentTab(tab) {
       const period = currentPeriod();
-      if (!period && tab !== 'fonctionnement') tab = 'fonctionnement';
+      if (!period && !OPEN_TABS.has(tab)) tab = 'fonctionnement';
       currentTab = tab;
-      document.querySelectorAll('.tab').forEach(btn => {
+      document.querySelectorAll('.tab[data-tab]').forEach(btn => {
         const id = btn.dataset.tab;
-        const locked = !period && id !== 'fonctionnement';
+        const locked = !period && !OPEN_TABS.has(id);
         const selected = id === currentTab;
         btn.classList.toggle('is-locked', locked);
         btn.disabled = locked;
         btn.setAttribute('aria-selected', selected ? 'true' : 'false');
         btn.tabIndex = selected ? 0 : -1;
-        btn.title = locked ? 'Ajoutez une période pour déverrouiller' : '';
+        btn.title = locked ? 'Ajoutez une période pour déverrouiller' : (btn.dataset.title || '');
       });
       document.querySelectorAll('.tab-panel').forEach(panel => {
         panel.hidden = panel.dataset.panel !== currentTab;
       });
-      document.querySelector('.period-bar').hidden = currentTab === 'suivi';
+      document.querySelector('.period-bar').hidden = currentTab !== 'saisies';
+      document.getElementById('saisiesGrid').hidden = !period;
+      if (currentTab === 'code' && !jsonEditorApplying) fillJsonEditor();
       if (currentTab === 'suivi') renderTracking();
       else destroyTrackingCharts();
     }
@@ -1043,7 +1131,7 @@
     });
     document.querySelector('.tabs').addEventListener('keydown', event => {
       if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-      const tabs = [...document.querySelectorAll('.tab')].filter(t => !t.disabled);
+      const tabs = [...document.querySelectorAll('.tab[data-tab]')].filter(t => !t.disabled);
       const i = tabs.findIndex(t => t.dataset.tab === currentTab);
       if (i < 0) return;
       event.preventDefault();
@@ -1072,7 +1160,7 @@
       store.responses = store.responses.filter(r => r.periodId !== id);
       const fallback = store.config.periods[index] || store.config.periods[index - 1] || null;
       store.selectedPeriodId = fallback ? fallback.id : null;
-      if (!store.selectedPeriodId) currentTab = 'fonctionnement';
+      if (!store.selectedPeriodId && !OPEN_TABS.has(currentTab)) currentTab = 'fonctionnement';
       render();
     });
     periodModal.addEventListener('click', event => {
@@ -1095,6 +1183,9 @@
       if (!hadPeriod) currentTab = 'saisies';
       closePeriodModal();
       render();
+    });
+    document.getElementById('importJson').addEventListener('click', () => {
+      document.getElementById('jsonImport').click();
     });
     document.getElementById('jsonImport').addEventListener('change', event => {
       const file = event.target.files[0];
@@ -1124,9 +1215,22 @@
       a.click();
       URL.revokeObjectURL(a.href);
     }
-    document.getElementById('exportJson').addEventListener('click', event => {
-      event.preventDefault();
+    function downloadStoreJson() {
       download(`meteo-equipe-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(exportDocument(), null, 2), 'application/json;charset=utf-8');
+    }
+    document.getElementById('exportJson').addEventListener('click', downloadStoreJson);
+    document.getElementById('downloadJson').addEventListener('click', event => {
+      event.preventDefault();
+      downloadStoreJson();
+    });
+    const jsonEditor = document.getElementById('jsonEditor');
+    jsonEditor.addEventListener('input', applyJsonEditorLive);
+    jsonEditor.addEventListener('keydown', event => {
+      if (event.key !== 'Tab' || event.shiftKey || event.ctrlKey || event.metaKey || event.altKey) return;
+      event.preventDefault();
+      const start = jsonEditor.selectionStart;
+      jsonEditor.setRangeText('  ', start, jsonEditor.selectionEnd, 'end');
+      applyJsonEditorLive();
     });
     render();
   </script>
